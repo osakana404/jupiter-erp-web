@@ -17,9 +17,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Category.init(
     {
-      name: DataTypes.STRING,
-      allowNull: false, // Как и в миграции
-      unique: true, // Чтобы данные были консистентны
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false, // Как и в миграции
+        unique: true, // Чтобы данные были консистентны
+      },
     },
     {
       sequelize,
