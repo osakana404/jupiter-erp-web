@@ -4,23 +4,27 @@ import { sequelize, testConnection } from "./config/db.js";
 import models from "./src/models/index.cjs";
 const { Category, Part } = models;
 import { authRouter } from "./src/routes/authRoute.js";
+import cookieParser from "cookie-parser"; // Импортируем
 
 const app = express();
+
 const PORT = process.env.PORT || 7000;
 
 testConnection();
+app.use(cookieParser()); // Теперь req.cookies будет работать!
 // Это middleware позволяет парсить JSON в теле запроса
 app.use(express.json());
 
 app.get("/", (req, res) => {
+  console.log(req.cookies); // Проверяем, что пришло от клиента
   // Кука с опциями (время жизни, httpOnly)
-  res.cookie("Hi", "There", {
-    maxAge: 900000, // 15 минут в миллисекундах
-    httpOnly: true, // Защита от доступа через JS
+  res.cookie("theme", "light", {
+    maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+    httpOnly: false, // чтобы был доступен для JS
     secure: false, // allow HTTP
   });
 
-  res.status(200).json(req.headers);
+  res.status(200).json({ message: "Welcome", receivedCookies: req.cookies });
 });
 
 // Роуты

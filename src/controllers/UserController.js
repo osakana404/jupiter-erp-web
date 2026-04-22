@@ -1,0 +1,31 @@
+class UserController {
+  constructor(userService) {
+    this.userService = userService;
+  }
+
+  register = async (req, res, next) => {
+    try {
+      const { login, password } = req.body;
+      const newUser = await this.userService.createUser(login, password);
+      res.status(201).json(newUser.login);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  login = async (req, res, next) => {
+    try {
+      const { login, password } = req.body;
+      const result = await this.userService.login(login, password);
+      res.cookie("token", result.token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // Кука проживет 24 часа
+      });
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+
+export default UserController;
