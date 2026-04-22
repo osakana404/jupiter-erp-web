@@ -3,35 +3,35 @@ import express from "express";
 import { sequelize, testConnection } from "./config/db.js";
 import models from "./src/models/index.cjs";
 const { Category, Part } = models;
+import { authRouter } from "./src/routes/authRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 7000;
 
 testConnection();
-console.log(models);
-
 // Это middleware позволяет парсить JSON в теле запроса
 app.use(express.json());
 
-app.get("/", async (req, res) => {
-  try {
-    // Используем явное указание модели и алиаса
-    const result = await Part.findAll({
-      include: [
-        {
-          model: Category,
-          as: "category", // Этот алиас ДОЛЖЕН совпадать с тем, что в part.cjs
-        },
-      ],
-    });
-    res.json(result);
-  } catch (error) {
-    console.error("ДЕТАЛИ ОШИБКИ:", error);
-    res.status(500).json({
-      message: "Ошибка при получении данных",
-      error: error.message,
-    });
-  }
+app.get("/", (req, res) => {
+  // Кука с опциями (время жизни, httpOnly)
+  res.cookie("Hi", "There", {
+    maxAge: 900000, // 15 минут в миллисекундах
+    httpOnly: true, // Защита от доступа через JS
+    secure: false, // allow HTTP
+  });
+
+  res.status(200).json(req.headers);
+});
+
+// Роуты
+app.use("/auth", authRouter);
+
+// Обработчик ошибок
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: {}, // Здесь можно скрыть подробности ошибки для безопасности
+  });
 });
 
 app.listen(PORT, () => {
