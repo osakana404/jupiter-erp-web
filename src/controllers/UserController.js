@@ -1,6 +1,6 @@
 class UserController {
   constructor(userService) {
-    this.userService = userService;
+    this.userService = userService; // Dependency Injection
   }
 
   register = async (req, res, next) => {

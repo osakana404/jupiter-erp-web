@@ -1,6 +1,6 @@
 import express from "express";
 import UserController from "../controllers/UserController.js";
-import UserService from "../services/UserService.js"; // Исправь опечатку в названии файла, если нужно
+import UserService from "../services/UserService.js";
 
 const authRouter = express.Router();
 
