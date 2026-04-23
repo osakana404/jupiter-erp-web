@@ -6,6 +6,7 @@ const { Category, Part } = models;
 import { authRouter } from "./src/routes/authRoute.js";
 import cookieParser from "cookie-parser"; // Импортируем
 import { checkAuth } from "./src/middlewares/auth.js";
+import { carRouter } from "./src/routes/carRoute.js";
 
 const app = express();
 
@@ -16,23 +17,13 @@ app.use(cookieParser()); // Теперь req.cookies будет работать
 // Это middleware позволяет парсить JSON в теле запроса
 app.use(express.json());
 
-app.get("/", checkAuth, (req, res) => {
-  console.log("Данные пользователя из токена:", req.user);
-  console.log(req.cookies); // Проверяем, что пришло от клиента
-  // Кука с опциями (время жизни, httpOnly)
-  res.cookie("theme", "light", {
-    maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
-    httpOnly: false, // чтобы был доступен для JS
-    secure: false, // allow HTTP
-  });
-
-  res
-    .status(200)
-    .json({ message: "Welcome", receivedCookies: req.cookies, user: req.user });
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Jupiter" });
 });
 
 // Роуты
 app.use("/auth", authRouter);
+app.use("/api/cars", carRouter);
 
 // Обработчик ошибок
 app.use((err, req, res, next) => {

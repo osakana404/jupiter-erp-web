@@ -1,7 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
-import models from "../models/index.cjs";
 import jwt from "jsonwebtoken";
+import models from "../models/index.cjs";
 const { Category, Part, User } = models;
 
 class UserService {
