@@ -7,7 +7,9 @@ class UserController {
     try {
       const { login, password } = req.body;
       const newUser = await this.userService.createUser(login, password);
-      res.status(201).json(newUser.login);
+      res
+        .status(201)
+        .json(`Пользователь ${newUser.login} успешно зарегистрирован`);
     } catch (error) {
       next(error);
     }
