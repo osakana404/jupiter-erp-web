@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "categoryId",
         as: "category", // алиас, чтобы обращаться part.category
       });
+      this.hasMany(models.Batch, {
+        foreignKey: "partId",
+        as: "batches",
+      });
     }
   }
   Part.init(

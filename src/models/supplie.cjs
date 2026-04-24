@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "agentId",
         as: "agent", // supplie.agent
       });
+      this.hasMany(models.Batch, {
+        // у поставки есть много партий
+        foreignKey: "supplieId",
+        as: "batches",
+      });
     }
   }
   Supplie.init(
