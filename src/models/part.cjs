@@ -1,17 +1,13 @@
 "use strict";
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class Part extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // Sequelize сам поймет все правила связей отсюда
       this.belongsTo(models.Category, {
         foreignKey: "categoryId",
-        as: "category", // алиас, чтобы обращаться part.category
+        as: "category",
       });
       this.hasMany(models.Batch, {
         foreignKey: "partId",
@@ -19,17 +15,18 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+
   Part.init(
     {
       name: DataTypes.STRING,
       quantity: DataTypes.INTEGER,
       description: DataTypes.TEXT,
-      categoryId: DataTypes.INTEGER,
+      categoryId: DataTypes.INTEGER, // Просто тип, остальное в associate
     },
     {
       sequelize,
       modelName: "Part",
-      tableName: "Parts",
+      tableName: "Parts", // Явно указываем таблицу
       timestamps: true,
     },
   );

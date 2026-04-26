@@ -7,6 +7,8 @@ import { authRouter } from "./src/routes/authRoute.js";
 import cookieParser from "cookie-parser"; // Импортируем
 import { checkAuth } from "./src/middlewares/auth.js";
 import { carRouter } from "./src/routes/carRoute.js";
+import { partRouter } from "./src/routes/partRoute.js";
+import { categoryRouter } from "./src/routes/categoryRoute.js";
 
 const app = express();
 
@@ -24,7 +26,8 @@ app.get("/", (req, res) => {
 // Роуты
 app.use("/auth", authRouter);
 app.use("/api/cars", carRouter);
-
+app.use("/api/parts", partRouter);
+app.use("/api/category", categoryRouter);
 // Обработчик ошибок
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
