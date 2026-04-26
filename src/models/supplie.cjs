@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "supplieId",
         as: "batches",
       });
+      this.hasMany(models.Transaction, {
+        // у поставки есть много партий
+        foreignKey: "supplieId",
+        as: "transactions",
+      });
     }
   }
   Supplie.init(
@@ -26,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "Suppliers",
+          model: "Agent",
           key: "id",
         },
       },
@@ -41,6 +46,13 @@ module.exports = (sequelize, DataTypes) => {
       date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: "User", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
     },
     {

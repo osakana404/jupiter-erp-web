@@ -8,7 +8,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // Один пользователь может создать много транзакций
+      this.hasMany(models.Transaction, {
+        foreignKey: "userId",
+        as: "transactions",
+      });
+      // Один пользователь может оформить много поставок
+      this.hasMany(models.Supplie, { foreignKey: "userId", as: "supplies" });
     }
   }
   User.init(
@@ -25,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
 
       role: {
         type: DataTypes.STRING,
-        defaultValue: "user",
+        defaultValue: "user", // есть еще admin
       },
     },
     {
