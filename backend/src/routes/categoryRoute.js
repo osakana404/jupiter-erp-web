@@ -7,7 +7,7 @@ const categoryRouter = express.Router();
 const categoryService = new CategoryService();
 const categoryController = new CategoryController(categoryService);
 
-categoryRouter.get("/", checkAuth, categoryController.show);
+categoryRouter.get("/", categoryController.show);
 categoryRouter.post(
   "/",
   checkAuth,

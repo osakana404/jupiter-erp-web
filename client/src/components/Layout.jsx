@@ -1,53 +1,52 @@
-import { Link, Outlet } from "react-router-dom";
+import { AppShell, Burger, NavLink, Group, Title } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 export default function Layout() {
+  const [opened, { toggle }] = useDisclosure();
+  const location = useLocation();
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      {/* Боковое меню (Sidebar) */}
-      <aside
-        style={{
-          width: "250px",
-          background: "#2c3e50",
-          color: "white",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-        }}
-      >
-        <h2 style={{ fontSize: "1.5rem", marginBottom: "20px" }}>
-          📦 ERP System
-        </h2>
+    <AppShell
+      header={{ height: 60 }}
+      navbar={{
+        width: 300,
+        breakpoint: "sm",
+        collapsed: { mobile: !opened },
+      }}
+      padding="md"
+    >
+      <AppShell.Header p="md">
+        <Group>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <Title order={3}>JUPITER ERP</Title>
+        </Group>
+      </AppShell.Header>
 
-        <Link to="/" style={navLinkStyle}>
-          📊 Дашборд
-        </Link>
-        <Link to="/supplies" style={navLinkStyle}>
-          🚚 Накладные
-        </Link>
-        <Link to="/references" style={navLinkStyle}>
-          📑 Справочники
-        </Link>
+      <AppShell.Navbar p="md">
+        <NavLink
+          component={Link}
+          to="/"
+          label="Дашборд"
+          active={location.pathname === "/"}
+        />
+        <NavLink
+          component={Link}
+          to="/supplies"
+          label="Накладные"
+          active={location.pathname === "/supplies"}
+        />
+        <NavLink
+          component={Link}
+          to="/references"
+          label="Справочники"
+          active={location.pathname.startsWith("/references")}
+        />
+      </AppShell.Navbar>
 
-        <div style={{ marginTop: "auto", fontSize: "0.8rem", opacity: 0.7 }}>
-          v1.0.0 (Sequelize + SQLite)
-        </div>
-      </aside>
-
-      {/* Основная область контента */}
-      <main style={{ flex: 1, padding: "20px", background: "#f4f7f6" }}>
+      <AppShell.Main bg="gray.0">
         <Outlet />
-      </main>
-    </div>
+      </AppShell.Main>
+    </AppShell>
   );
 }
-
-// Простые стили для ссылок
-const navLinkStyle = {
-  color: "white",
-  textDecoration: "none",
-  padding: "10px",
-  borderRadius: "4px",
-  transition: "background 0.2s",
-  display: "block",
-};

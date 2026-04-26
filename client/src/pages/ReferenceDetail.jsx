@@ -1,43 +1,63 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import TableSort from "../components/TableSort.jsx";
+import {
+  Title,
+  Text,
+  Button,
+  Group,
+  Paper,
+  Loader,
+  Alert,
+} from "@mantine/core";
 
 export default function ReferenceDetail() {
-  // Получаем :type из URL (например, "parts" или "cars")
   const { type } = useParams();
 
-  // Словарь для красивых заголовков
-  const titles = {
-    parts: "⚙️ Справочник запчастей",
-    cars: "🚗 Справочник автомобилей",
-    agents: "🤝 Контрагенты",
-    categories: "📂 Категории",
-    users: "👤 Пользователи",
-  };
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["reference", type],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/api/${type}`);
+      if (!response.ok) throw new Error("Бэкенд не отвечает");
+      return response.json();
+    },
+    // Вот здесь происходит магия трансформации!
+    select: (data) =>
+      data.map((part) => ({
+        ...part,
+        // Создаем новое поле с красивой датой
+        formattedDate: dayjs(part.createdAt).format("DD.MM.YYYY HH:mm"),
+      })),
+  });
+
+  if (isLoading)
+    return (
+      <Group justify="center" mt="xl">
+        <Loader size="xl" />
+      </Group>
+    );
+
+  if (error)
+    return (
+      <Alert title="Ошибка!" color="red" mt="md">
+        {error.message}. Проверьте, запущен ли ваш Express сервер.
+      </Alert>
+    );
 
   return (
     <div>
-      <Link
-        to="/references"
-        style={{ color: "#3498db", textDecoration: "none" }}
-      >
-        ← Назад к списку
-      </Link>
-      <hr />
-      <h1>{titles[type] || "Неизвестный справочник"}</h1>
+      <Group justify="space-between" mb="lg">
+        <div>
+          <Title>{type === "parts" ? "Запчасти" : type.toUpperCase()}</Title>
+          <Text c="dimmed">Управление данными справочника</Text>
+        </div>
+        <Button color="green">+ Добавить запись</Button>
+      </Group>
 
-      <div
-        style={{
-          padding: "20px",
-          border: "1px dashed #ccc",
-          borderRadius: "8px",
-          background: "white",
-        }}
-      >
-        <p>
-          Здесь скоро будет таблица с данными для <strong>{type}</strong> из
-          вашей базы SQLite.
-        </p>
-        {/* Сюда мы позже подключим TanStack Table и данные из API */}
-      </div>
+      <Paper shadow="sm" radius="md" p="md" withBorder>
+        <TableSort data={data} />
+      </Paper>
     </div>
   );
 }

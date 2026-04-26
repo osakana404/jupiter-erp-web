@@ -7,7 +7,7 @@ const partRouter = express.Router();
 const partService = new PartService();
 const partController = new PartController(partService);
 
-partRouter.get("/", checkAuth, partController.readAll);
+partRouter.get("/", partController.readAll);
 partRouter.post("/", checkAuth, checkRole(["admin"]), partController.create);
 
 export { partRouter };
