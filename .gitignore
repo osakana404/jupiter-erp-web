@@ -1,5 +1,17 @@
 # My
-config/
+backend/config/
+# Игнорируем зависимости обоих проектов
+backend/node_modules/
+client/node_modules/
+
+# Игнорируем секреты бэкенда
+backend/.env
+
+# Игнорируем сборку фронтенда
+client/dist/
+
+
+
 
 # Logs
 logs
