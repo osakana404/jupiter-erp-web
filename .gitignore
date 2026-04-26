@@ -9,7 +9,7 @@ backend/.env
 
 # Игнорируем сборку фронтенда
 client/dist/
-
+.DS_Store
 
 
 

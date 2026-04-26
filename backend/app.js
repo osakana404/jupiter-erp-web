@@ -1,4 +1,5 @@
 import "dotenv/config";
+import cors from "cors";
 import express from "express";
 import { sequelize, testConnection } from "./config/db.js";
 import models from "./src/models/index.cjs";
@@ -13,6 +14,12 @@ import { categoryRouter } from "./src/routes/categoryRoute.js";
 const app = express();
 
 const PORT = process.env.PORT || 7000;
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Разрешаем доступ только твоему фронтенду
+    credentials: true, // Важно для работы с КУКАМИ!
+  }),
+);
 
 testConnection();
 app.use(cookieParser()); // Теперь req.cookies будет работать!
