@@ -10,8 +10,9 @@ const queryClient = new QueryClient();
 const theme = createTheme({
   /** Здесь можно будет настроить цвета ERP позже */
   primaryColor: "blue",
+  fontFamily: "Cambria Math",
   headings: {
-    fontFamily: "Greycliff CF, sans-serif",
+    fontFamily: "Cambria, sans-serif",
     textWrap: "pretty",
     sizes: {
       h1: { fontSize: "2rem", fontWeight: "900" },
