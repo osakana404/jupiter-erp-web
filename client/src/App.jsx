@@ -6,10 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Импортируем наши новые страницы
 import Dashboard from "./pages/Dashboard";
 import Supplies from "./pages/Supplies";
-import References from "./pages/References";
 // Не забудь импортировать Layout, если мы решили оставить общее меню
 import Layout from "./components/Layout";
-import ReferenceDetail from "./pages/ReferenceDetail"; // Создадим его сейчас
+import Parts from "./pages/Parts"; // Создадим его сейчас
 
 function App() {
   return (
@@ -20,10 +19,9 @@ function App() {
           <Route path="supplies" element={<Supplies />} />
 
           <Route path="references">
-            <Route index element={<References />} />{" "}
-            {/* Список всех справочников */}
-            <Route path=":type" element={<ReferenceDetail />} />{" "}
-            {/* Один файл для всех */}
+            <Route path="parts" element={<Parts />} />
+            <Route path="cars" element={<Supplies />} />
+            <Route path="agents" element={<Supplies />} />
           </Route>
         </Route>
       </Routes>

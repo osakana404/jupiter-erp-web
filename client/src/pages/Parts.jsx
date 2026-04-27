@@ -1,7 +1,6 @@
-import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import TableSort from "../components/TableSort.jsx";
+import TableSort from "../components/TableSortParts.jsx";
 import {
   Title,
   Text,
@@ -12,13 +11,11 @@ import {
   Alert,
 } from "@mantine/core";
 
-export default function ReferenceDetail() {
-  const { type } = useParams();
-
+export default function Parts() {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["reference", type],
+    queryKey: ["parts"],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/${type}`);
+      const response = await fetch(`http://localhost:3000/api/parts`);
       if (!response.ok) throw new Error("Бэкенд не отвечает");
       return response.json();
     },
@@ -49,7 +46,7 @@ export default function ReferenceDetail() {
     <div>
       <Group justify="space-between" mb="lg">
         <div>
-          <Title>{type === "parts" ? "Запчасти" : type.toUpperCase()}</Title>
+          <Title>{`запчасти`.toUpperCase()}</Title>
           <Text c="dimmed">Управление данными справочника</Text>
         </div>
         <Button color="green">+ Добавить запись</Button>

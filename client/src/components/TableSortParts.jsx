@@ -16,7 +16,7 @@ import {
   IconChevronUp,
   IconSearch,
 } from "@tabler/icons-react";
-import classes from "./TableSort.module.css"; // Опционально, или используй инлайн стили
+// import classes from "./TableSort.module.css";
 
 // Компонент заголовка с сортировкой
 function Th({ children, reversed, sorted, onSort }) {

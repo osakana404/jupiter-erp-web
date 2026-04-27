@@ -7,7 +7,7 @@ const carRouter = express.Router();
 const carService = new CarService();
 const carController = new CarController(carService);
 
-carRouter.get("/", checkAuth, carController.show);
+carRouter.get("/", carController.show);
 carRouter.post("/", checkAuth, checkRole(["admin"]), carController.create);
 
 export { carRouter };
