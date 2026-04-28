@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "supplieId",
         as: "transactions",
       });
+      // ДОБАВЬ ЭТО: Связь с пользователем (автором накладной)
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
     }
   }
   Supplie.init(
@@ -49,10 +54,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        references: { model: "User", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
       },
     },
     {

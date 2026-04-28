@@ -28,6 +28,11 @@ class UserController {
       next(error);
     }
   };
+
+  me = async (req, res) => {
+    // middleware checkAuth положит данные юзера в req.user
+    res.status(200).json({ user: req.user });
+  };
 }
 
 export default UserController;

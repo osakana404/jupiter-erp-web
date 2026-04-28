@@ -10,6 +10,12 @@ import { checkAuth } from "./src/middlewares/auth.js";
 import { carRouter } from "./src/routes/carRoute.js";
 import { partRouter } from "./src/routes/partRoute.js";
 import { categoryRouter } from "./src/routes/categoryRoute.js";
+import { agentRouter } from "./src/routes/agentRoute.js";
+import { supplyRouter } from "./src/routes/supplyRoute.js";
+import { batchRouter } from "./src/routes/batchRoute.js";
+import { disburseRouter } from "./src/routes/disburseRoute.js";
+import { transactionRouter } from "./src/routes/transactionRoute.js";
+import { statsRouter } from "./src/routes/statsRoute.js";
 
 const app = express();
 
@@ -35,6 +41,12 @@ app.use("/auth", authRouter);
 app.use("/api/cars", carRouter);
 app.use("/api/parts", partRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/agents", agentRouter);
+app.use("/api/supplies", supplyRouter);
+app.use("/api/batches", batchRouter);
+app.use("/api/disburse", disburseRouter);
+app.use("/api/transactions", transactionRouter);
+app.use("/api/stats", statsRouter);
 // Обработчик ошибок
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({

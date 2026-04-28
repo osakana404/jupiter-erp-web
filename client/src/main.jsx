@@ -4,6 +4,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import { MantineProvider, createTheme } from "@mantine/core"; // Импорт Mantine
 import "@mantine/core/styles.css"; // ОБЯЗАТЕЛЬНО: базовые стили
+import "@mantine/dates/styles.css"; // ДОБАВЬ ЭТУ СТРОКУ
+import "dayjs/locale/ru";
 import "./index.css";
 
 const queryClient = new QueryClient();

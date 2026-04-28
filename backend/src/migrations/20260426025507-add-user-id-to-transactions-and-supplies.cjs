@@ -6,14 +6,14 @@ module.exports = {
     await queryInterface.addColumn("Transactions", "userId", {
       type: Sequelize.INTEGER,
       allowNull: true, // true, чтобы старые записи не выдали ошибку
-      references: { model: "User", key: "id" },
+      references: { model: "Users", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
     });
     await queryInterface.addColumn("Supplies", "userId", {
       type: Sequelize.INTEGER,
       allowNull: true,
-      references: { model: "User", key: "id" },
+      references: { model: "Users", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
     });

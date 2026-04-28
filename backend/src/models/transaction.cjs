@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Каждая транзакция принадлежит какому-то пользователю
-      this.belongsTo(models.User, { foreignKey: "userId", as: "author" });
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user", // или 'user'
+      });
       this.belongsTo(models.Part, { foreignKey: "partId", as: "part" });
       this.belongsTo(models.Car, { foreignKey: "carId", as: "car" });
       this.belongsTo(models.Supplie, {
@@ -33,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true, // Только для списания
       },
-      supplyId: {
+      supplieId: {
         type: DataTypes.INTEGER,
         allowNull: true, // Только для прихода
       },
@@ -64,9 +67,6 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: true, // true, чтобы старые записи не выдали ошибку
-        references: { model: "User", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
       },
     },
     {

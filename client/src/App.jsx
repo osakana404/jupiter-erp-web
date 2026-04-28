@@ -1,31 +1,49 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// Импортируем наши новые страницы
-import Dashboard from "./pages/Dashboard";
-import Supplies from "./pages/Supplies";
-// Не забудь импортировать Layout, если мы решили оставить общее меню
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+
 import Layout from "./components/Layout";
-import Parts from "./pages/Parts"; // Создадим его сейчас
+import Login from "./pages/Login";
+import Categories from "./pages/Categories";
+import Parts from "./pages/Parts";
+import Cars from "./pages/Cars";
+import Agents from "./pages/Agents";
+import Supplies from "./pages/Supplies";
+import Batches from "./pages/Batches";
+import DisburseView from "./pages/DisburseView";
+import TransactionView from "./pages/TransactionView";
+import DashboardView from "./pages/DashboardView";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="supplies" element={<Supplies />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-          <Route path="references">
-            <Route path="parts" element={<Parts />} />
-            <Route path="cars" element={<Supplies />} />
-            <Route path="agents" element={<Supplies />} />
+          {/* Все внутренние страницы оборачиваем в ProtectedRoute */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardView />} />
+            <Route path="supplies" element={<Supplies />} />{" "}
+            <Route path="disburse" element={<DisburseView />} />{" "}
+            <Route path="batches" element={<Batches />} />{" "}
+            <Route path="transactions" element={<TransactionView />} />{" "}
+            {/* ПУТЬ ДЛЯ НАКЛАДНЫХ */}
+            <Route path="references/parts" element={<Parts />} />
+            <Route path="references/category" element={<Categories />} />
+            <Route path="references/cars" element={<Cars />} />
+            <Route path="references/agents" element={<Agents />} />
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

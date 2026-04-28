@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import TableSort from "../components/TableSortParts.jsx";
 import {
@@ -9,52 +9,140 @@ import {
   Paper,
   Loader,
   Alert,
+  Modal,
+  Stack,
+  TextInput,
+  Select,
+  Center,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useForm } from "@mantine/form";
 
 export default function Parts() {
-  const { data, isLoading, error } = useQuery({
+  const queryClient = useQueryClient();
+  const [opened, { open, close }] = useDisclosure(false);
+
+  // Получаем запчасти
+  const {
+    data: parts,
+    isLoading: partsLoading,
+    error: partsError,
+  } = useQuery({
     queryKey: ["parts"],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/parts`);
-      if (!response.ok) throw new Error("Бэкенд не отвечает");
+      const response = await fetch(`http://localhost:3000/api/parts`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Ошибка загрузки запчастей");
       return response.json();
     },
-    // Вот здесь происходит магия трансформации!
     select: (data) =>
       data.map((part) => ({
         ...part,
-        // Создаем новое поле с красивой датой
+        categoryName: part.category?.name || "Без категории", // Достаем имя категории
         formattedDate: dayjs(part.createdAt).format("DD.MM.YYYY HH:mm"),
       })),
   });
 
-  if (isLoading)
-    return (
-      <Group justify="center" mt="xl">
-        <Loader size="xl" />
-      </Group>
-    );
+  // Получаем категории для выпадающего списка
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/api/category`, {
+        credentials: "include",
+      });
+      return response.json();
+    },
+  });
 
-  if (error)
+  const form = useForm({
+    initialValues: { name: "", description: "", categoryId: "" },
+    validate: {
+      name: (v) => (v.length < 2 ? "Слишком коротко" : null),
+      categoryId: (v) => (!v ? "Выберите категорию" : null),
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (values) => {
+      const response = await fetch(`http://localhost:3000/api/parts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+        credentials: "include",
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["parts"] });
+      close();
+      form.reset();
+    },
+  });
+
+  if (partsLoading)
     return (
-      <Alert title="Ошибка!" color="red" mt="md">
-        {error.message}. Проверьте, запущен ли ваш Express сервер.
-      </Alert>
+      <Center mt="xl">
+        <Loader />
+      </Center>
     );
 
   return (
     <div>
       <Group justify="space-between" mb="lg">
-        <div>
-          <Title>{`запчасти`.toUpperCase()}</Title>
-          <Text c="dimmed">Управление данными справочника</Text>
-        </div>
-        <Button color="green">+ Добавить запись</Button>
+        <Title>ЗАПЧАСТИ</Title>
+        <Button color="green" onClick={open}>
+          + Добавить запись
+        </Button>
       </Group>
 
       <Paper shadow="sm" radius="md" p="md" withBorder>
-        <TableSort data={data} />
+        {/* Передаем список категорий в таблицу, чтобы там тоже можно было менять */}
+        <TableSort data={parts} categories={categories} />
       </Paper>
+
+      <Modal opened={opened} onClose={close} title="Новая запчасть" centered>
+        <form onSubmit={form.onSubmit((v) => createMutation.mutate(v))}>
+          <Stack>
+            <TextInput
+              label="Наименование"
+              required
+              {...form.getInputProps("name")}
+            />
+
+            <Select
+              label="Категория"
+              placeholder="Выберите из списка"
+              required
+              data={
+                categories?.map((c) => ({
+                  value: String(c.id),
+                  label: c.name,
+                })) || []
+              }
+              {...form.getInputProps("categoryId")}
+            />
+
+            <TextInput
+              label="Описание"
+              {...form.getInputProps("description")}
+            />
+
+            <Group justify="flex-end" mt="md">
+              <Button variant="default" onClick={close}>
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                color="green"
+                loading={createMutation.isPending}
+              >
+                Создать
+              </Button>
+            </Group>
+          </Stack>
+        </form>
+      </Modal>
     </div>
   );
 }

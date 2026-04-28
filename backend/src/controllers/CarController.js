@@ -21,7 +21,28 @@ class CarController {
         description,
         status,
       );
-      res.status(201).json(result);
+      res.status(201).json({ message: "Автомобиль успешно добавлен", result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  update = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const result = await this.carService.updateCar(id, updateData);
+      res.status(200).json({ message: "Данные автомобиля обновлены", result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  delete = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await this.carService.deleteCar(id);
+      res.status(200).json({ message: "Автомобиль удален из базы" });
     } catch (error) {
       next(error);
     }
