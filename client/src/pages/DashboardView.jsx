@@ -10,6 +10,9 @@ import {
   Button,
   ThemeIcon,
   Badge,
+  Modal,
+  ActionIcon,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconDatabase,
@@ -17,11 +20,18 @@ import {
   IconArrowDownLeft,
   IconCar,
   IconFileSpreadsheet,
+  IconEye,
 } from "@tabler/icons-react";
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
+import { useState } from "react"; // Не забудь импортировать
+
+import { useDisclosure } from "@mantine/hooks";
+
 export default function DashboardView() {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [selectedCar, setSelectedCar] = useState(null);
   const { data: stats, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: () =>
@@ -36,6 +46,15 @@ export default function DashboardView() {
   const inc = stats?.transactions?.find((t) => t.type === "increment");
   const dec = stats?.transactions?.find((t) => t.type === "decrement");
 
+  // Функция для открытия деталей
+  const handleShowDetails = (carId, carInfo) => {
+    setSelectedCar({ id: carId, ...carInfo });
+    open();
+  };
+
+  // Фильтруем детали только для выбранной машины
+  const carDetails =
+    stats?.details?.filter((d) => d.carId === selectedCar?.id) || [];
   // Функция для безопасного извлечения суммы
   // Проверяем и .dataValues.totalSum, и просто .totalSum (зависит от версии Sequelize/сборки)
   const getSum = (obj) => {
@@ -163,41 +182,116 @@ export default function DashboardView() {
             <IconCar size={20} /> Расходы по автомобилям
           </Group>
         </Title>
-        <Table verticalSpacing="sm">
+
+        <Table verticalSpacing="sm" highlightOnHover>
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Автомобиль</Table.Th>
               <Table.Th>Госномер</Table.Th>
-              <Table.Th align="right">Сумма затрат</Table.Th>
+              {/* Добавляем textAlign: 'right' для заголовков с числами */}
+              <Table.Th style={{ textAlign: "right" }}>Сумма затрат</Table.Th>
+              {/* Задаем фиксированную ширину для колонки с кнопкой, чтобы она не "гуляла" */}
+              <Table.Th style={{ textAlign: "right", width: 80 }}>
+                Детали
+              </Table.Th>
             </Table.Tr>
           </Table.Thead>
+
           <Table.Tbody>
             {stats?.byCars?.map((c, i) => {
               const spentAmount = c.spent || c.dataValues?.spent || 0;
+              const carId = c.carId;
+              const carInfo = c.car;
+
               return (
                 <Table.Tr key={i}>
-                  <Table.Td>{c.car?.model || "Неизвестно"}</Table.Td>
                   <Table.Td>
-                    <Badge variant="outline">{c.car?.number || "—"}</Badge>
+                    <Text fw={500}>{carInfo?.model || "Неизвестно"}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge variant="dot" color="blue" radius="sm">
+                      {carInfo?.number || "—"}
+                    </Badge>
                   </Table.Td>
                   <Table.Td align="right">
-                    <Text fw={700}>
+                    <Text fw={700} c="blue.9">
                       {parseFloat(spentAmount).toLocaleString()} ₽
                     </Text>
+                  </Table.Td>
+                  <Table.Td align="right">
+                    <Tooltip label="Посмотреть запчасти" withArrow>
+                      <ActionIcon
+                        variant="light" // Subtle выглядит аккуратнее в таблицах
+                        color="blue"
+                        onClick={() => handleShowDetails(carId, carInfo)}
+                      >
+                        <IconEye size={18} />
+                      </ActionIcon>
+                    </Tooltip>
                   </Table.Td>
                 </Table.Tr>
               );
             })}
-            {stats?.byCars?.length === 0 && (
+
+            {(!stats?.byCars || stats.byCars.length === 0) && (
               <Table.Tr>
-                <Table.Td colSpan={3} align="center">
-                  Нет данных по списаниям
+                <Table.Td colSpan={4} align="center">
+                  <Text c="dimmed" py="xl">
+                    Данные о расходах отсутствуют
+                  </Text>
                 </Table.Td>
               </Table.Tr>
             )}
           </Table.Tbody>
         </Table>
       </Paper>
+      {/* --- МОДАЛКА С ДЕТАЛИЗАЦИЕЙ --- */}
+      <Modal
+        opened={opened}
+        onClose={close}
+        title={`История расходов: ${selectedCar?.model} (${selectedCar?.number})`}
+        size="lg"
+      >
+        <Table striped>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Дата</Table.Th>
+              <Table.Th>Запчасть</Table.Th>
+              <Table.Th>Поставка</Table.Th>
+              <Table.Th align="right">Сумма</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {carDetails.map((det) => (
+              <Table.Tr key={det.id}>
+                <Table.Td>{dayjs(det.date).format("DD.MM.YY")}</Table.Td>
+                <Table.Td>
+                  <Text size="sm" fw={500}>
+                    {det.part?.name}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {det.quantity} шт. x {det.price} ₽
+                  </Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text size="xs">Накл: {det.supplies?.docNumber || "—"}</Text>
+                  <Text size="xs" c="dimmed">
+                    {det.supplies?.agent?.name}
+                  </Text>
+                </Table.Td>
+                <Table.Td align="right" fw={600}>
+                  {det.sum?.toLocaleString()} ₽
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+        {carDetails.length === 0 && (
+          <Text align="center" py="md" c="dimmed">
+            Нет данных о запчастях
+          </Text>
+        )}
+      </Modal>
     </Stack>
   );
 }

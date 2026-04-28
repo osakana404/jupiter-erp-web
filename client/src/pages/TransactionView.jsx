@@ -10,7 +10,6 @@ import {
   Stack,
   Button,
   TextInput,
-  Tooltip, // Добавил для удобства
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
