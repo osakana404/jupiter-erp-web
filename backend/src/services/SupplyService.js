@@ -1,5 +1,5 @@
 import models from "../models/index.cjs";
-const { Supplie, Batch, Transaction, sequelize } = models;
+const { Supplie, Batch, Transaction, sequelize, Part } = models;
 
 class SupplyService {
   async createSupply(data, userId) {
@@ -67,6 +67,11 @@ class SupplyService {
       include: [
         { model: models.Agent, as: "agent" },
         { model: models.User, as: "user", attributes: ["login"] },
+        {
+          model: Batch,
+          as: "batches",
+          include: [{ model: Part, as: "part" }], // Чтобы увидеть названия запчастей
+        },
       ],
       order: [["createdAt", "DESC"]],
     });

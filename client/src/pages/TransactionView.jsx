@@ -10,39 +10,36 @@ import {
   Stack,
   Button,
   TextInput,
+  Tooltip, // Добавил для удобства
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates"; // Нужен @mantine/dates
+import { DateInput } from "@mantine/dates";
 import {
   IconFileSpreadsheet,
   IconSearch,
   IconFilter,
+  IconUser, // Иконка пользователя
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
 
 export default function TransactionsView() {
   const [search, setSearch] = useState("");
-  const [dateRange, setDateRange] = useState([null, null]); // [start, end]
+  const [dateRange, setDateRange] = useState([null, null]);
 
-  // Запрос с учетом фильтров дат
   const { data: transactions, refetch } = useQuery({
     queryKey: ["transactions", dateRange],
     queryFn: () => {
       const params = new URLSearchParams();
-
-      if (dateRange[0]) {
+      if (dateRange[0])
         params.append(
           "startDate",
           dayjs(dateRange[0]).startOf("day").toISOString(),
         );
-      }
-      if (dateRange[1]) {
-        // Устанавливаем конец дня для конечной даты (23:59:59)
+      if (dateRange[1])
         params.append(
           "endDate",
           dayjs(dateRange[1]).endOf("day").toISOString(),
         );
-      }
 
       return fetch(`http://localhost:3000/api/transactions?${params}`, {
         credentials: "include",
@@ -50,12 +47,11 @@ export default function TransactionsView() {
     },
   });
 
-  // Функция экспорта в Excel
   const exportToExcel = () => {
     const dataForExport = filtered.map((t) => ({
       Дата: dayjs(t.date).format("DD.MM.YYYY HH:mm"),
       Тип: t.type === "increment" ? "Приход" : "Выдача",
-      Накладная: t.supplies?.docNumber || "—", // ДОБАВЛЕНО
+      Накладная: t.supplies?.docNumber || "—",
       Запчасть: t.part?.name,
       "Объект/Авто":
         t.type === "increment"
@@ -64,15 +60,13 @@ export default function TransactionsView() {
       Количество: t.quantity,
       "Цена за ед.": t.price,
       Сумма: t.sum,
-      Автор: t.user?.login,
+      Автор: t.user?.login || "Система", // Логин автора в Excel
       Комментарий: t.comment || "",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataForExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Транзакции");
-
-    // Генерация и скачивание файла
     XLSX.writeFile(
       workbook,
       `Отчет_Меркурий_${dayjs().format("YYYY-MM-DD")}.xlsx`,
@@ -82,7 +76,8 @@ export default function TransactionsView() {
   const filtered = transactions?.filter(
     (t) =>
       t.part?.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.car?.number?.toLowerCase().includes(search.toLowerCase()),
+      t.car?.number?.toLowerCase().includes(search.toLowerCase()) ||
+      t.user?.login?.toLowerCase().includes(search.toLowerCase()), // Теперь поиск работает и по автору
   );
 
   return (
@@ -103,7 +98,7 @@ export default function TransactionsView() {
         <Group align="flex-end" mb="md">
           <TextInput
             label="Поиск"
-            placeholder="Запчасть или авто..."
+            placeholder="Запчасть, авто или автор..."
             leftSection={<IconSearch size={16} />}
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
@@ -113,7 +108,6 @@ export default function TransactionsView() {
           <DateInput
             locale="ru"
             label="С даты"
-            placeholder="Выберите дату"
             value={dateRange[0]}
             onChange={(val) => setDateRange([val, dateRange[1]])}
             clearable
@@ -122,7 +116,6 @@ export default function TransactionsView() {
           <DateInput
             locale="ru"
             label="По дату"
-            placeholder="Выберите дату"
             value={dateRange[1]}
             onChange={(val) => setDateRange([dateRange[0], val])}
             clearable
@@ -147,6 +140,7 @@ export default function TransactionsView() {
               <Table.Th>Объект</Table.Th>
               <Table.Th>Кол-во</Table.Th>
               <Table.Th>Сумма</Table.Th>
+              <Table.Th>Автор</Table.Th> {/* НОВАЯ КОЛОНКА */}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -154,7 +148,10 @@ export default function TransactionsView() {
               <Table.Tr key={t.id}>
                 <Table.Td>{dayjs(t.date).format("DD.MM.YY HH:mm")}</Table.Td>
                 <Table.Td>
-                  <Badge color={t.type === "increment" ? "green" : "red"}>
+                  <Badge
+                    color={t.type === "increment" ? "green" : "red"}
+                    variant="light"
+                  >
                     {t.type === "increment" ? "Приход" : "Выдача"}
                   </Badge>
                 </Table.Td>
@@ -176,7 +173,17 @@ export default function TransactionsView() {
                   </Text>
                 </Table.Td>
                 <Table.Td>{t.quantity} шт.</Table.Td>
-                <Table.Td>{t.sum?.toLocaleString()} ₽</Table.Td>
+                <Table.Td fw={500}>{t.sum?.toLocaleString()} ₽</Table.Td>
+
+                {/* ВЫВОД АВТОРА */}
+                <Table.Td>
+                  <Group gap={4}>
+                    <IconUser size={14} color="gray" />
+                    <Badge color="gray" variant="outline" size="sm">
+                      {t.user?.login || "—"}
+                    </Badge>
+                  </Group>
+                </Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>

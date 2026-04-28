@@ -9,7 +9,6 @@ import {
   Stack,
   Button,
   ThemeIcon,
-  RingProgress,
   Badge,
 } from "@mantine/core";
 import {
