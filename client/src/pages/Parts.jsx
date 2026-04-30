@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
+import TextHead from "../components/TextHead.jsx";
 
 export default function Parts() {
   const queryClient = useQueryClient();
@@ -90,7 +91,9 @@ export default function Parts() {
   return (
     <div>
       <Group justify="space-between" mb="lg">
-        <Title>ЗАПЧАСТИ</Title>
+        <div>
+          <TextHead title="запчасти" text="запчасти" />
+        </div>
         <Button color="green" onClick={open}>
           + Добавить запись
         </Button>

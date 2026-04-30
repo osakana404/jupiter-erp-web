@@ -19,7 +19,7 @@ import {
   IconArrowUpRight,
   IconArrowDownLeft,
   IconCar,
-  IconFileSpreadsheet,
+  IconFileTypeXls,
   IconEye,
 } from "@tabler/icons-react";
 import * as XLSX from "xlsx";
@@ -28,6 +28,7 @@ import dayjs from "dayjs";
 import { useState } from "react"; // Не забудь импортировать
 
 import { useDisclosure } from "@mantine/hooks";
+import TextHead from "../components/TextHead";
 
 export default function DashboardView() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -106,11 +107,15 @@ export default function DashboardView() {
   return (
     <Stack gap="lg">
       <Group justify="space-between">
-        <Title order={2}>ПАНЕЛЬ УПРАВЛЕНИЯ (DASHBOARD)</Title>
+        <div>
+          {" "}
+          <TextHead title="Дашборд" text="показатели склада" />
+        </div>
+
         <Button
           variant="light"
           color="green"
-          leftSection={<IconFileSpreadsheet size={20} />}
+          leftSection={<IconFileTypeXls size={20} />}
           onClick={exportGeneralReport}
         >
           Скачать полный отчет

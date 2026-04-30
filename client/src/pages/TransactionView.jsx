@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
-  IconFileSpreadsheet,
+  IconFileTypeXls,
   IconSearch,
   IconFilter,
   IconUser, // Иконка пользователя
@@ -85,7 +85,7 @@ export default function TransactionsView() {
         <Title order={2}>ИСТОРИЯ ОПЕРАЦИЙ</Title>
         <Button
           color="green"
-          leftSection={<IconFileSpreadsheet size={20} />}
+          leftSection={<IconFileTypeXls size={20} />}
           onClick={exportToExcel}
           disabled={!transactions?.length}
         >

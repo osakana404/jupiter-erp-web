@@ -13,6 +13,7 @@ import Batches from "./pages/Batches";
 import DisburseView from "./pages/DisburseView";
 import TransactionView from "./pages/TransactionView";
 import DashboardView from "./pages/DashboardView";
+import RepairView from "./pages/RepairView";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="disburse" element={<DisburseView />} />{" "}
             <Route path="batches" element={<Batches />} />{" "}
             <Route path="transactions" element={<TransactionView />} />{" "}
+            <Route path="repair" element={<RepairView />} />{" "}
             {/* ПУТЬ ДЛЯ НАКЛАДНЫХ */}
             <Route path="references/parts" element={<Parts />} />
             <Route path="references/category" element={<Categories />} />

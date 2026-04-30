@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import TextHead from "../components/TextHead";
 import {
   Table,
   Title,
@@ -29,9 +30,13 @@ export default function Batches() {
   );
 
   return (
-    <Stack>
+    <Stack gap="lg">
       <Group justify="space-between">
-        <Title order={2}>СКЛАДСКИЕ ПАРТИИ (ОСТАТКИ)</Title>
+        <div>
+          {" "}
+          <TextHead title="складские партии" text="остатки" />
+        </div>
+
         <TextInput
           placeholder="Поиск по названию или OEM..."
           leftSection={<IconSearch size={16} />}

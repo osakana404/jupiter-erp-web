@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconTrash, IconPlus, IconCheck, IconBox } from "@tabler/icons-react";
+import TextHead from "../components/TextHead";
 
 export default function DisburseView() {
   const queryClient = useQueryClient();
@@ -78,7 +79,9 @@ export default function DisburseView() {
 
   return (
     <Stack maw={800} mx="auto">
-      <Title order={2}>ВЫДАЧА ЗАПЧАСТЕЙ (ГРУППОВАЯ)</Title>
+      <div>
+        <TextHead title="выдача запчастпей" text="групповая" />
+      </div>
 
       <Paper withBorder p="xl" radius="md">
         <form onSubmit={form.onSubmit((v) => mutation.mutate(v))}>

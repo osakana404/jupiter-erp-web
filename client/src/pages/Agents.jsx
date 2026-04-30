@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import TextHead from "../components/TextHead";
 import {
   Title,
   Text,
@@ -142,10 +143,7 @@ export default function Agents() {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={2}>КОНТРАГЕНТЫ</Title>
-          <Text c="dimmed" size="sm">
-            Поставщики запчастей и услуг
-          </Text>
+          <TextHead title="контрагенты" text="поставщики запчастей и услуг" />
         </div>
         <Button
           leftSection={<IconBuildingStore size={18} />}

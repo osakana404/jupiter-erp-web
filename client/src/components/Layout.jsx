@@ -20,6 +20,7 @@ import {
   IconMobiledata,
   IconLogout,
   IconFileMinus,
+  IconCarGarage,
 } from "@tabler/icons-react";
 
 export default function Layout() {
@@ -143,6 +144,15 @@ export default function Layout() {
             />
           </NavLink>
         )}
+
+        <NavLink
+          bdrs="md"
+          component={Link}
+          to="/repair"
+          label="Ремонт"
+          leftSection={<IconCarGarage size={24} />}
+          active={location.pathname === "/repair"}
+        />
 
         <NavLink
           bdrs="md"

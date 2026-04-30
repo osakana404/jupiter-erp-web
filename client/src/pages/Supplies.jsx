@@ -36,7 +36,8 @@ import {
   AlignmentType,
 } from "docx";
 import { saveAs } from "file-saver";
-import { IconPrinter } from "@tabler/icons-react"; // Добавим иконку принтера
+import { IconFileTypeDocx } from "@tabler/icons-react"; // Добавим иконку
+import TextHead from "../components/TextHead";
 
 export default function Supplies() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -258,7 +259,11 @@ export default function Supplies() {
   return (
     <Stack>
       <Group justify="space-between">
-        <Title order={2}>ПРИХОДНЫЕ НАКЛАДНЫЕ</Title>
+        <div>
+          {" "}
+          <TextHead title="НАКЛАДНЫе" text="приходные" />
+        </div>
+
         <Button leftSection={<IconPlus size={18} />} onClick={open}>
           Оформить приход
         </Button>
@@ -301,7 +306,7 @@ export default function Supplies() {
                       onClick={() => generateWord(s)}
                       title="Скачать в Word"
                     >
-                      <IconPrinter size={18} />
+                      <IconFileTypeDocx size={18} />
                     </ActionIcon>
                   </Group>
                 </Table.Td>

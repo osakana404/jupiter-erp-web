@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Title,
   Text,
   Button,
   Group,
@@ -25,6 +24,7 @@ import {
   IconCar,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import TextHead from "../components/TextHead";
 
 export default function Cars() {
   const queryClient = useQueryClient();
@@ -151,10 +151,7 @@ export default function Cars() {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={2}>АВТОПАРК</Title>
-          <Text c="dimmed" size="sm">
-            Учет и состояние спецтранспорта
-          </Text>
+          <TextHead title="АВТОПАРК" text="Учет и состояние спецтранспорта" />
         </div>
         <Button leftSection={<IconCar size={18} />} color="blue" onClick={open}>
           Добавить машину

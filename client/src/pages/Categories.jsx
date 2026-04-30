@@ -17,6 +17,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
+import TextHead from "../components/TextHead";
 
 export default function Categories() {
   const queryClient = useQueryClient();
@@ -99,8 +100,7 @@ export default function Categories() {
     <Stack>
       <Group justify="space-between">
         <div>
-          <Title>КАТЕГОРИИ</Title>
-          <Text c="dimmed">Справочник групп запчастей</Text>
+          <TextHead title="категории" text="справочник групп запчастпей" />
         </div>
         <Button color="green" onClick={open}>
           + Добавить категорию
