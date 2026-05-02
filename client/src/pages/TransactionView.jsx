@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Table,
   Paper,
-  Title,
   Badge,
   Text,
   Group,
@@ -20,6 +19,7 @@ import {
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
+import TextHead from "../components/TextHead";
 
 export default function TransactionsView() {
   const [search, setSearch] = useState("");
@@ -82,7 +82,10 @@ export default function TransactionsView() {
   return (
     <Stack>
       <Group justify="space-between">
-        <Title order={2}>ИСТОРИЯ ОПЕРАЦИЙ</Title>
+        <div>
+          <TextHead title="Транзакции" text="история операций" />
+        </div>
+
         <Button
           color="green"
           leftSection={<IconFileTypeXls size={20} />}
