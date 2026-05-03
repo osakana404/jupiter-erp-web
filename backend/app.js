@@ -16,6 +16,7 @@ import { batchRouter } from "./src/routes/batchRoute.js";
 import { disburseRouter } from "./src/routes/disburseRoute.js";
 import { transactionRouter } from "./src/routes/transactionRoute.js";
 import { statsRouter } from "./src/routes/statsRoute.js";
+import { repairRouter } from "./src/routes/repairRoute.js";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/api/batches", batchRouter);
 app.use("/api/disburse", disburseRouter);
 app.use("/api/transactions", transactionRouter);
 app.use("/api/stats", statsRouter);
+app.use("/api/repairs", repairRouter);
 // Обработчик ошибок
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
