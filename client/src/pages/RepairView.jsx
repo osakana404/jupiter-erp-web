@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
 import TextHead from "../components/TextHead";
+import { useQuery } from "@tanstack/react-query";
 
 export default function RepairView() {
+  const { data } = useQuery({
+    queryKey: ["price"],
+    queryFn: getPrice,
+  });
+
+  async function getPrice() {
+    const res = await fetch("http://localhost:3000/api/repairs/prices");
+    return res.json();
+  }
+
   const repairData = [
     {
       id: 1,
@@ -31,29 +42,7 @@ export default function RepairView() {
       createdAt: "02.05.2026",
     },
   ];
-  const priceData = [
-    {
-      id: 1,
-      name: "замена гранат",
-      description: "быстро и качественно продиагностируем и заменим гранаты",
-      price: 15000,
-      updatedAt: "02.05.2026",
-    },
-    {
-      id: 2,
-      name: "диагностика авто",
-      description: "продиагностируем",
-      price: 500,
-      updatedAt: "02.05.2026",
-    },
-    {
-      id: 3,
-      name: "замена прокладки ГБЦ",
-      description: " качественно продиагностируем и заменим прокладку ГБЦ",
-      price: 15500,
-      updatedAt: "02.05.2026",
-    },
-  ];
+
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showBetaWarning, setShowBetaWarning] = useState(true);
@@ -220,8 +209,8 @@ export default function RepairView() {
                     </tr>
                   </thead>
                   <tbody>
-                    {priceData && priceData.length > 0 ? (
-                      priceData.map((element) => (
+                    {data && data.length > 0 ? (
+                      data.map((element) => (
                         <tr key={element.id}>
                           <td>{element.id}</td>
                           <td>{element.name}</td>

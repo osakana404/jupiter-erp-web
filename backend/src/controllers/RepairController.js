@@ -33,6 +33,7 @@ class RepairController {
       next(error);
     }
   };
+
   // клиенты
   readClients = async (req, res, next) => {
     try {
@@ -43,12 +44,19 @@ class RepairController {
     }
   };
 
+  //создание клиента, prices - массив объектов {price_id, quantity}
   createNewClient = async (req, res, next) => {
     try {
-      const { fio, auto, number, tel, passport } = req.body;
+      const { fio, auto, number, tel, passport, prices } = req.body;
       if (!fio || !auto || !number || !tel) {
         res.status(401).json({
           message: "ФИО, АВТО, ГОС.НОМЕР, ТЕЛЕФОН - обязательны к заполнению!",
+        });
+      }
+      if (!prices || !Array.isArray(prices) || prices.length === 0) {
+        return res.status(400).json({
+          message:
+            "Передайте массив услуг в формате: [{price_id: 1, quantity: 1}]",
         });
       }
       const result = await this.repairService.addRepairClient(
@@ -57,6 +65,7 @@ class RepairController {
         number,
         tel,
         passport,
+        prices,
       );
       res.status(201).json({ message: `Клиент ${result.fio} успешно создан` });
     } catch (error) {
