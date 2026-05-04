@@ -1,12 +1,14 @@
 # My
 backend/config/
+backend/config.production/
+
 # Игнорируем зависимости обоих проектов
 backend/node_modules/
 client/node_modules/
 
 # Игнорируем секреты бэкенда
 backend/.env
-
+backend/.env.production
 # Игнорируем сборку фронтенда
 client/dist/
 .DS_Store

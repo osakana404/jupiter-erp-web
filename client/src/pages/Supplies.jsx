@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useState } from "react"; // Добавлен useState
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -52,21 +53,21 @@ export default function Supplies() {
   const { data: agents } = useQuery({
     queryKey: ["agents"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/agents", {
+      fetch(`${API_BASE_URL}/api/agents`, {
         credentials: "include",
       }).then((res) => res.json()),
   });
   const { data: parts } = useQuery({
     queryKey: ["parts"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/parts", { credentials: "include" }).then(
+      fetch(`${API_BASE_URL}/api/parts`, { credentials: "include" }).then(
         (res) => res.json(),
       ),
   });
   const { data: supplies } = useQuery({
     queryKey: ["supplies"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/supplies", {
+      fetch(`${API_BASE_URL}/api/supplies`, {
         credentials: "include",
       }).then((res) => res.json()),
   });
@@ -81,7 +82,7 @@ export default function Supplies() {
 
   const mutation = useMutation({
     mutationFn: (values) =>
-      fetch("http://localhost:3000/api/supplies", {
+      fetch(`${API_BASE_URL}/api/supplies`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

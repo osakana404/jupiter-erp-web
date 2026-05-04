@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useEffect, useState } from "react";
 import TextHead from "../components/TextHead";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ export default function RepairView() {
   });
 
   async function getPrice() {
-    const res = await fetch("http://localhost:3000/api/repairs/prices");
+    const res = await fetch(`${API_BASE_URL}/api/repairs/prices`);
     return res.json();
   }
 

@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery } from "@tanstack/react-query";
 import {
   SimpleGrid,
@@ -36,7 +37,7 @@ export default function DashboardView() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/stats", { credentials: "include" }).then(
+      fetch(`${API_BASE_URL}/api/stats`, { credentials: "include" }).then(
         (res) => res.json(),
       ),
   });

@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import TextHead from "../components/TextHead";
 import {
@@ -42,7 +43,7 @@ export default function Agents() {
   } = useQuery({
     queryKey: ["agents"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/agents", {
+      const res = await fetch(`${API_BASE_URL}/api/agents`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Ошибка загрузки справочника контрагентов");

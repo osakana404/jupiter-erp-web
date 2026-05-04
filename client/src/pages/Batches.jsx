@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery } from "@tanstack/react-query";
 import TextHead from "../components/TextHead";
 import {
@@ -20,7 +21,7 @@ export default function Batches() {
   const { data: batches, isLoading } = useQuery({
     queryKey: ["batches"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/batches", {
+      fetch(`${API_BASE_URL}/api/batches`, {
         credentials: "include",
       }).then((res) => res.json()),
   });

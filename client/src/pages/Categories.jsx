@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Title,
@@ -32,7 +33,7 @@ export default function Categories() {
   } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/category", {
+      const res = await fetch(`${API_BASE_URL}/api/category`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Ошибка загрузки категорий");
@@ -51,8 +52,8 @@ export default function Categories() {
   const mutation = useMutation({
     mutationFn: async (values) => {
       const url = editingId
-        ? `http://localhost:3000/api/category/${editingId}`
-        : `http://localhost:3000/api/category`;
+        ? `${API_BASE_URL}/api/category/${editingId}`
+        : `${API_BASE_URL}/api/category`;
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -72,7 +73,7 @@ export default function Categories() {
   // 3. Мутация удаления
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      await fetch(`http://localhost:3000/api/category/${id}`, {
+      await fetch(`${API_BASE_URL}/api/category/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

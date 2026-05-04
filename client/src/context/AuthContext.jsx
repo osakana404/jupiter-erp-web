@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { Loader, Center } from "@mantine/core";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const AuthContext = createContext(null);
 
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:3000/auth/me", {
+        const res = await fetch(`${API_BASE_URL}/auth/me`, {
           credentials: "include",
         });
         if (res.ok) {

@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -23,21 +24,21 @@ export default function DisburseView() {
   const { data: parts } = useQuery({
     queryKey: ["parts"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/parts", { credentials: "include" }).then(
+      fetch(`${API_BASE_URL}/api/parts`, { credentials: "include" }).then(
         (res) => res.json(),
       ),
   });
   const { data: cars } = useQuery({
     queryKey: ["cars"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/cars", { credentials: "include" }).then(
+      fetch(`${API_BASE_URL}/api/cars`, { credentials: "include" }).then(
         (res) => res.json(),
       ),
   });
   const { data: batches } = useQuery({
     queryKey: ["batches"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/batches", {
+      fetch(`${API_BASE_URL}/api/batches`, {
         credentials: "include",
       }).then((res) => res.json()),
   });
@@ -52,7 +53,7 @@ export default function DisburseView() {
 
   const mutation = useMutation({
     mutationFn: (values) =>
-      fetch("http://localhost:3000/api/disburse", {
+      fetch(`${API_BASE_URL}/api/disburse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -40,7 +41,7 @@ export default function TransactionsView() {
           dayjs(dateRange[1]).endOf("day").toISOString(),
         );
 
-      return fetch(`http://localhost:3000/api/transactions?${params}`, {
+      return fetch(`${API_BASE_URL}/api/transactions?${params}`, {
         credentials: "include",
       }).then((res) => res.json());
     },

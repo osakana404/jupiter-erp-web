@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Text,
@@ -40,7 +41,7 @@ export default function Cars() {
   } = useQuery({
     queryKey: ["cars"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/cars", {
+      const res = await fetch(`${API_BASE_URL}/api/cars`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Ошибка загрузки автопарка");
@@ -66,8 +67,8 @@ export default function Cars() {
   const mutation = useMutation({
     mutationFn: async (values) => {
       const url = editingId
-        ? `http://localhost:3000/api/cars/${editingId}`
-        : `http://localhost:3000/api/cars`;
+        ? `${API_BASE_URL}/api/cars/${editingId}`
+        : `${API_BASE_URL}/api/cars`;
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -87,7 +88,7 @@ export default function Cars() {
   // 4. Мутация удаления
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      await fetch(`http://localhost:3000/api/cars/${id}`, {
+      await fetch(`${API_BASE_URL}/api/cars/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

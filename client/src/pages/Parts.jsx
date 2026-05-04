@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import TableSort from "../components/TableSortParts.jsx";
@@ -31,7 +32,7 @@ export default function Parts() {
   } = useQuery({
     queryKey: ["parts"],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/parts`, {
+      const response = await fetch(`${API_BASE_URL}/api/parts`, {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Ошибка загрузки запчастей");
@@ -49,7 +50,7 @@ export default function Parts() {
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/category`, {
+      const response = await fetch(`${API_BASE_URL}/api/category`, {
         credentials: "include",
       });
       return response.json();
@@ -66,7 +67,7 @@ export default function Parts() {
 
   const createMutation = useMutation({
     mutationFn: async (values) => {
-      const response = await fetch(`http://localhost:3000/api/parts`, {
+      const response = await fetch(`${API_BASE_URL}/api/parts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
