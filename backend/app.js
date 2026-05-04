@@ -1,4 +1,5 @@
 import "dotenv/config";
+
 import cors from "cors";
 import express from "express";
 import { sequelize, testConnection } from "./config/db.js";
@@ -17,13 +18,19 @@ import { disburseRouter } from "./src/routes/disburseRoute.js";
 import { transactionRouter } from "./src/routes/transactionRoute.js";
 import { statsRouter } from "./src/routes/statsRoute.js";
 import { repairRouter } from "./src/routes/repairRoute.js";
+import path from "node:path"; // Добавьте это!
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 const PORT = process.env.PORT || 7000;
 app.use(
   cors({
-    origin: "http://localhost:5173", // Разрешаем доступ только твоему фронтенду
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true, // Важно для работы с КУКАМИ!
   }),
 );
@@ -33,9 +40,9 @@ app.use(cookieParser()); // Теперь req.cookies будет работать
 // Это middleware позволяет парсить JSON в теле запроса
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Jupiter" });
-});
+// app.get("/", (req, res) => {
+//   res.status(200).json({ message: "Jupiter" });
+// });
 
 // Роуты
 app.use("/auth", authRouter);
@@ -49,6 +56,18 @@ app.use("/api/disburse", disburseRouter);
 app.use("/api/transactions", transactionRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/repairs", repairRouter);
+
+// Используем абсолютный путь
+const clientPath = path.resolve(__dirname, "../client/dist");
+
+// 1. Раздаем статику
+app.use(express.static(clientPath));
+
+// 2. Catch-all роут через регулярку (начинается с /)
+// Это поймает любой GET запрос и отправит index.html
+app.get(/^(?!\/api).+/, (req, res) => {
+  res.sendFile(path.join(clientPath, "index.html"));
+});
 // Обработчик ошибок
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
