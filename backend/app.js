@@ -27,7 +27,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 7000; // в .env PORT=3000
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -39,10 +39,6 @@ testConnection();
 app.use(cookieParser()); // Теперь req.cookies будет работать!
 // Это middleware позволяет парсить JSON в теле запроса
 app.use(express.json());
-
-// app.get("/", (req, res) => {
-//   res.status(200).json({ message: "Jupiter" });
-// });
 
 // Роуты
 app.use("/auth", authRouter);
