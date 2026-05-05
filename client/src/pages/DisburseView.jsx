@@ -2,6 +2,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  FileInput,
+  Image,
+  SimpleGrid,
   Paper,
   Title,
   Select,
@@ -15,10 +18,18 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconTrash, IconPlus, IconCheck, IconBox } from "@tabler/icons-react";
+import {
+  IconTrash,
+  IconPlus,
+  IconCheck,
+  IconBox,
+  IconPhoto,
+  IconX,
+} from "@tabler/icons-react";
 import TextHead from "../components/TextHead";
 
 export default function DisburseView() {
+  const [files, setFiles] = useState([]);
   const queryClient = useQueryClient();
 
   const { data: parts } = useQuery({
@@ -52,11 +63,20 @@ export default function DisburseView() {
   });
 
   const mutation = useMutation({
-    mutationFn: (values) =>
-      fetch(`${API_BASE_URL}/api/disburse`, {
+    mutationFn: (values) => {
+      const formData = new FormData();
+
+      // Добавляем фото
+      files.forEach((file) => {
+        formData.append("photos", file);
+      });
+
+      // Упаковываем данные формы в строку
+      formData.append("data", JSON.stringify(values));
+
+      return fetch(`${API_BASE_URL}/api/disburse`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: formData, // Без заголовка Content-Type!
         credentials: "include",
       }).then((res) =>
         res.ok
@@ -64,10 +84,12 @@ export default function DisburseView() {
           : res.json().then((e) => {
               throw e;
             }),
-      ),
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(["batches", "transactions"]);
       form.reset();
+      setFiles([]); // Очистка файлов
       alert("Списание выполнено!");
     },
     onError: (err) => alert(err.message),
@@ -75,7 +97,9 @@ export default function DisburseView() {
 
   const totalSum = form.values.items.reduce((acc, item) => {
     const batch = batches?.find((b) => String(b.id) === item.batchId);
-    return acc + (batch ? batch.price * item.quantity : 0);
+    const q = Number(item.quantity) || 0;
+    const p = Number(batch?.price) || 0;
+    return acc + q * p;
   }, 0);
 
   return (
@@ -181,6 +205,55 @@ export default function DisburseView() {
             >
               Добавить запчасть в список
             </Button>
+
+            {/* --- СЕКЦИЯ ФОТО (например, фото замененной детали или акта) --- */}
+            <Divider
+              label="Фотографии (подтверждение списания)"
+              labelPosition="center"
+            />
+            <Stack gap="xs">
+              <FileInput
+                label="Прикрепить фото"
+                placeholder="Выберите фото..."
+                accept="image/png,image/jpeg"
+                multiple
+                value={files}
+                onChange={(newFiles) => {
+                  setFiles((prev) => {
+                    const combined = [...prev, ...(newFiles || [])];
+                    return combined.slice(0, 10);
+                  });
+                }}
+                leftSection={<IconPhoto size={18} />}
+                clearable
+              />
+
+              {files.length > 0 && (
+                <SimpleGrid cols={5} spacing="xs">
+                  {files.map((file, index) => {
+                    const imageUrl = URL.createObjectURL(file);
+                    return (
+                      <Paper key={index} withBorder p={2} pos="relative">
+                        <Image src={imageUrl} radius="sm" h={60} fit="cover" />
+                        <ActionIcon
+                          variant="filled"
+                          color="red"
+                          size="xs"
+                          pos="absolute"
+                          top={-5}
+                          right={-5}
+                          onClick={() =>
+                            setFiles(files.filter((_, i) => i !== index))
+                          }
+                        >
+                          <IconX size={10} />
+                        </ActionIcon>
+                      </Paper>
+                    );
+                  })}
+                </SimpleGrid>
+              )}
+            </Stack>
 
             <Textarea
               label="Общий комментарий"

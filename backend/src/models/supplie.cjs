@@ -55,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
       },
+      photos: {
+        type: DataTypes.JSON, // Храним как ['path1.jpg', 'path2.jpg']
+        allowNull: true,
+      },
     },
     {
       sequelize,

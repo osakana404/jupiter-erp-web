@@ -2,10 +2,13 @@ import models from "../models/index.cjs";
 const { Supplie, Batch, Transaction, sequelize, Part } = models;
 
 class SupplyService {
-  async createSupply(data, userId) {
+  async createSupply(data, userId, photoPaths = []) {
     const t = await sequelize.transaction();
     try {
       const { agentId, docNumber, date, items } = data;
+
+      // ВАЖНО: Если сделать обязательным,  проверка:
+      // if (photoPaths.length === 0) throw new Error("Фото накладной обязательно");
 
       const totalSum = items.reduce(
         (sum, item) => sum + item.price * item.quantity,
@@ -19,6 +22,7 @@ class SupplyService {
           date: date || new Date(),
           totalSum,
           userId,
+          photos: photoPaths, // Сохраняем массив путей
         },
         { transaction: t },
       );

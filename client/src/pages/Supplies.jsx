@@ -2,6 +2,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 import { useState } from "react"; // Добавлен useState
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  FileInput,
+  SimpleGrid,
+  Image,
   Title,
   Paper,
   Table,
@@ -23,6 +26,8 @@ import {
   IconTrash,
   IconEye,
   IconFileDescription,
+  IconPhoto,
+  IconX,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import {
@@ -41,6 +46,7 @@ import { IconFileTypeDocx } from "@tabler/icons-react"; // Добавим ико
 import TextHead from "../components/TextHead";
 
 export default function Supplies() {
+  const [files, setFiles] = useState([]); // Стейт для фото
   const [opened, { open, close }] = useDisclosure(false);
   // Состояние для модалки просмотра
   const [viewOpened, { open: openView, close: closeView }] =
@@ -81,17 +87,28 @@ export default function Supplies() {
   });
 
   const mutation = useMutation({
-    mutationFn: (values) =>
-      fetch(`${API_BASE_URL}/api/supplies`, {
+    mutationFn: (values) => {
+      const formData = new FormData();
+
+      // 1. Добавляем файлы (ключ 'photos' должен совпадать с тем, что в multer на бэкенде)
+      files.forEach((file) => {
+        formData.append("photos", file);
+      });
+
+      // 2. Добавляем остальные данные как строку в ключе 'data'
+      formData.append("data", JSON.stringify(values));
+
+      return fetch(`${API_BASE_URL}/api/supplies`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: formData, // headers НЕ НУЖНЫ, браузер сам поставит multipart/form-data
         credentials: "include",
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(["supplies", "batches"]);
       close();
       form.reset();
+      setFiles([]); // Очищаем файлы
     },
   });
 
@@ -325,6 +342,67 @@ export default function Supplies() {
         size="xl"
       >
         <form onSubmit={form.onSubmit((v) => mutation.mutate(v))}>
+          {/* --- СЕКЦИЯ ЗАГРУЗКИ ФОТО --- */}
+          <Divider
+            label="Фотографии документов (макс. 10)"
+            labelPosition="center"
+          />
+          <Stack gap="xs">
+            <FileInput
+              label="Прикрепить фото"
+              description="Макс. 10 фото, до 5 Мб каждое"
+              placeholder="Выберите изображения"
+              accept="image/png,image/jpeg"
+              multiple
+              value={files}
+              onChange={(newFiles) => {
+                // Mantine при clearable=true при нажатии на крестик может вернуть пустой массив или null
+                if (!newFiles) {
+                  setFiles([]);
+                  return;
+                }
+                setFiles((prev) => {
+                  const combined = [...prev, ...newFiles];
+                  return combined.slice(0, 10);
+                });
+              }}
+              leftSection={<IconPhoto size={18} />}
+              clearable // Этого достаточно, onClear не нужен
+            />
+
+            {/* Превью выбранных фото (по желанию) */}
+            {files.length > 0 && (
+              <SimpleGrid cols={5} spacing="xs">
+                {files.map((file, index) => {
+                  const imageUrl = URL.createObjectURL(file);
+                  return (
+                    <Paper key={index} withBorder p={2} pos="relative">
+                      <Image
+                        src={imageUrl}
+                        radius="sm"
+                        h={60}
+                        fallbackSrc="https://placehold.co/60x60?text=Error"
+                      />
+                      <ActionIcon
+                        variant="filled"
+                        color="red"
+                        size="xs"
+                        pos="absolute"
+                        top={-5}
+                        right={-5}
+                        onClick={() =>
+                          setFiles(files.filter((_, i) => i !== index))
+                        }
+                      >
+                        <IconX size={10} />
+                      </ActionIcon>
+                    </Paper>
+                  );
+                })}
+              </SimpleGrid>
+            )}
+          </Stack>
+          <Divider mt="xs" />
           <Stack>
             <Group grow>
               <Select
@@ -364,11 +442,17 @@ export default function Supplies() {
               Добавить позицию
             </Button>
 
+            {/* 2. ИСПРАВЛЕННЫЙ РАСЧЕТ ИТОГО (в конце формы) */}
             <Group justify="flex-end" mt="xl">
               <Text fw={700} size="lg">
                 Итого:{" "}
                 {form.values.items
-                  .reduce((acc, curr) => acc + curr.price * curr.quantity, 0)
+                  .reduce((acc, curr) => {
+                    // Добавляем принудительное преобразование в число, чтобы не было 0
+                    const q = Number(curr.quantity) || 0;
+                    const p = Number(curr.price) || 0;
+                    return acc + q * p;
+                  }, 0)
                   .toLocaleString()}{" "}
                 ₽
               </Text>
@@ -441,6 +525,34 @@ export default function Supplies() {
                 ))}
               </Table.Tbody>
             </Table>
+
+            {/* --- В МОДАЛКЕ ПРОСМОТРА (selectedSupply) --- */}
+            {selectedSupply?.photos && selectedSupply.photos.length > 0 && (
+              <>
+                <Text size="sm" fw={600} mt="md">
+                  Прикрепленные фото:
+                </Text>
+                <SimpleGrid cols={3} spacing="xs">
+                  {selectedSupply.photos.map((path, idx) => (
+                    <Paper
+                      key={idx}
+                      withBorder
+                      radius="md"
+                      component="a"
+                      href={`${API_BASE_URL}/${path}`} // Путь к фото на сервере
+                      target="_blank"
+                      style={{ overflow: "hidden", cursor: "pointer" }}
+                    >
+                      <Image
+                        src={`${API_BASE_URL}/${path}`}
+                        h={100}
+                        fit="cover"
+                      />
+                    </Paper>
+                  ))}
+                </SimpleGrid>
+              </>
+            )}
 
             <Group justify="flex-end" mt="md">
               <Stack gap={0} align="flex-end">

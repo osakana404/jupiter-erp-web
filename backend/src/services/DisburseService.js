@@ -2,7 +2,7 @@ import models from "../models/index.cjs";
 const { Batch, Transaction, sequelize } = models;
 
 class DisburseService {
-  async createMassDisburse(data, userId) {
+  async createMassDisburse(data, userId, photoPaths = []) {
     const { carId, items, comment } = data; // items - это массив запчастей
     const t = await sequelize.transaction();
 
@@ -41,6 +41,7 @@ class DisburseService {
             price: batch.price,
             sum: batch.price * quantity,
             userId,
+            photos: photoPaths, // Прикрепляем фото ко всем транзакциям этого списания
             comment: comment || "Массовое списание",
           },
           { transaction: t },

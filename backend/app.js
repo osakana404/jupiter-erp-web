@@ -58,6 +58,7 @@ const clientPath = path.resolve(__dirname, "../client/dist");
 
 // 1. Раздаем статику
 app.use(express.static(clientPath));
+app.use("/uploads", express.static("uploads"));
 
 // 2. Catch-all роут через регулярку (начинается с /)
 // Это поймает любой GET запрос и отправит index.html

@@ -68,6 +68,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true, // true, чтобы старые записи не выдали ошибку
       },
+      photos: {
+        type: DataTypes.JSON, // Храним как ['path1.jpg', 'path2.jpg']
+        allowNull: true,
+      },
     },
     {
       sequelize,
