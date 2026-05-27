@@ -6,6 +6,7 @@ backend/uploads/photos/
 backend/node_modules/
 client/node_modules/
 
+
 # Игнорируем секреты бэкенда
 backend/.env
 backend/.env.production

@@ -30,18 +30,39 @@ import { useState } from "react"; // Не забудь импортироват�
 
 import { useDisclosure } from "@mantine/hooks";
 import TextHead from "../components/TextHead";
+import { useAuth } from "../context/AuthContext";
 
 export default function DashboardView() {
+  const { user } = useAuth(); // Достаем пользователя
+
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedCar, setSelectedCar] = useState(null);
+  // Проверка прав доступа
+  const hasAccess = user?.role === "admin" || user?.role === "mechanic";
   const { data: stats, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: () =>
       fetch(`${API_BASE_URL}/api/stats`, { credentials: "include" }).then(
         (res) => res.json(),
       ),
+    enabled: hasAccess, // Не загружаем данные, если нет доступа
   });
 
+  // Если нет прав — выводим сообщение
+  if (!hasAccess) {
+    return (
+      <Paper withBorder p="xl" radius="md" ta="center">
+        <Text size="xl" fw={700}>
+          У вас нет доступа к дашборду
+        </Text>
+        <Text c="dimmed">
+          Пожалуйста, обратитесь к администратору для получения прав.
+        </Text>
+      </Paper>
+    );
+  }
+
+  // Если права есть, но идет загрузка
   if (isLoading) return <Text>Загрузка аналитики...</Text>;
 
   // Безопасный поиск объектов

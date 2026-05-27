@@ -44,8 +44,44 @@ export default function OrdView() {
             <Paper shadow="md" withBorder p="xl">
               <Text>Официальные бланки ССМП</Text>
               <Group justify="center">
-                <Button>Бланк Письма</Button>
-                <Button>Бланк Приказа</Button>
+                <Button
+                  onClick={() => {
+                    // 1. Создаем прямую ссылку на файл
+                    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/blank_pisma.docx`;
+
+                    // 2. Создаем временный элемент ссылки
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.setAttribute("download", "Бланк_Письма.docx"); // Атрибут download заставляет браузер скачивать
+                    link.setAttribute("target", "_blank");
+
+                    // 3. Добавляем в DOM, кликаем и удаляем
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Бланк Письма
+                </Button>
+                <Button
+                  onClick={() => {
+                    // 1. Создаем прямую ссылку на файл
+                    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/blank_prikaza.docx`;
+
+                    // 2. Создаем временный элемент ссылки
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.setAttribute("download", "Бланк_Письма.docx"); // Атрибут download заставляет браузер скачивать
+                    link.setAttribute("target", "_blank");
+
+                    // 3. Добавляем в DOM, кликаем и удаляем
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Бланк Приказа
+                </Button>
               </Group>
             </Paper>
           </>
@@ -55,8 +91,44 @@ export default function OrdView() {
             <Paper shadow="md" withBorder p="xl">
               <Text>Утвержденные бланки с закладками для ЕСЭД</Text>
               <Group justify="center">
-                <Button>Бланк Письма ЕСЭД</Button>
-                <Button>Бланк Приказа ЕСЭД</Button>
+                <Button
+                  onClick={() => {
+                    // 1. Создаем прямую ссылку на файл
+                    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/blank_pisma_esed.docx`;
+
+                    // 2. Создаем временный элемент ссылки
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.setAttribute("download", "Бланк_Письма_ЕСЭД.docx"); // Атрибут download заставляет браузер скачивать
+                    link.setAttribute("target", "_blank");
+
+                    // 3. Добавляем в DOM, кликаем и удаляем
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Бланк Письма ЕСЭД
+                </Button>
+                <Button
+                  onClick={() => {
+                    // 1. Создаем прямую ссылку на файл
+                    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/blank_prikaza_esed.docx`;
+
+                    // 2. Создаем временный элемент ссылки
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.setAttribute("download", "Бланк_Письма_ЕСЭД.docx"); // Атрибут download заставляет браузер скачивать
+                    link.setAttribute("target", "_blank");
+
+                    // 3. Добавляем в DOM, кликаем и удаляем
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Бланк Приказа ЕСЭД
+                </Button>
               </Group>
             </Paper>
           </>

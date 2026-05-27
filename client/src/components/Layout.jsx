@@ -8,6 +8,9 @@ import {
   Text,
   ActionIcon,
   Stack,
+  Anchor,
+  Tooltip,
+  Box,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useAuth } from "../context/AuthContext";
@@ -64,17 +67,33 @@ export default function Layout() {
               MERCURY | ССМП
             </Title>
             <Text c="dimmed" size="xs" mt={4}>
-              v.0.7.6
+              v.0.8.3
             </Text>
           </Group>
 
           {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ: Быстрые ссылки */}
           {/* Скрываем на мобилках, чтобы не ломать шапку */}
-          <Group visibleFrom="md" gap="sm">
-            <Text size="sm" c="--var(mantine-color-dimmed)">
-              Не бойтесь облаков, застилающих вид – золотые глаза, словно факел,
-              озаряют небо.
-            </Text>
+          <Group visibleFrom="md" gap="xl">
+            <Anchor
+              component={Link}
+              to="/ord"
+              size="sm"
+              c="dimmed"
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <IconFileWord size={16} />
+              Как работать с ЕСЭД
+            </Anchor>
+            <Anchor
+              component={Link}
+              to="/tel"
+              size="sm"
+              c="dimmed"
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <IconDeviceLandlinePhone size={16} />
+              Телефонный справочник
+            </Anchor>
           </Group>
 
           {/* ПРАВАЯ ЧАСТЬ: Профиль и Выход */}
@@ -154,80 +173,107 @@ export default function Layout() {
               />
             </>
           )}
-
-          <NavLink
-            bdrs="md"
-            component={Link}
-            to="/batches"
-            label="Партии"
-            leftSection={<IconDatabase size={24} />}
-            active={location.pathname === "/batches"}
-          />
+          <Tooltip
+            label="У вас нет доступа"
+            disabled={user?.role === "admin" || user?.role === "mechanic"}
+          >
+            <Box>
+              <NavLink
+                bdrs="md"
+                component={Link}
+                to="/batches"
+                label="Партии"
+                leftSection={<IconDatabase size={24} />}
+                active={location.pathname === "/batches"}
+                disabled={
+                  !(user?.role === "admin" || user?.role === "mechanic")
+                }
+              />
+            </Box>
+          </Tooltip>
 
           {/* СКРЫВАЕМ СПРАВОЧНИКИ ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ */}
-          {(user?.role === "admin" || user?.role === "mechanic") && (
-            <NavLink
-              bdrs="md"
-              label="Справочники"
-              leftSection={<IconVocabulary size={24} />}
-              childrenOffset={28}
-              defaultOpened={location.pathname.startsWith("/references")}
-            >
-              <NavLink
-                bdrs="md"
-                label="Запчасти"
-                component={Link}
-                to="/references/parts"
-                active={location.pathname === "/references/parts"}
-              />
-              <NavLink
-                bdrs="md"
-                label="Категории"
-                component={Link}
-                to="/references/category"
-                active={location.pathname === "/references/category"}
-              />
-              <NavLink
-                bdrs="md"
-                label="Машины"
-                component={Link}
-                to="/references/cars"
-                active={location.pathname === "/references/cars"}
-              />
-              <NavLink
-                bdrs="md"
-                label="Контрагенты"
-                component={Link}
-                to="/references/agents"
-                active={location.pathname === "/references/agents"}
-              />
-              <NavLink
-                bdrs="md"
-                label="Отделы"
-                component={Link}
-                to="/references/departments"
-                active={location.pathname === "/references/departments"}
-              />
-            </NavLink>
-          )}
 
-          {/* <NavLink
-            bdrs="md"
-            component={Link}
-            to="/repair"
-            label="Ремонт"
-            leftSection={<IconCarGarage size={24} />}
-            active={location.pathname === "/repair"}
-          /> */}
+          <Tooltip
+            label="У вас нет доступа"
+            disabled={user?.role === "admin" || user?.role === "mechanic"}
+          >
+            <Box>
+              <NavLink
+                bdrs="md"
+                label="Справочники"
+                leftSection={<IconVocabulary size={24} />}
+                // Если доступа нет - делаем кнопку неактивной
+                disabled={
+                  !(user?.role === "admin" || user?.role === "mechanic")
+                }
+                childrenOffset={28}
+                // Если нет доступа, меню не должно открываться
+                defaultOpened={
+                  location.pathname.startsWith("/references") &&
+                  (user?.role === "admin" || user?.role === "mechanic")
+                }
+              >
+                {/* Вложенные ссылки можно оставить или тоже спрятать */}
 
-          <NavLink
-            bdrs="md"
-            component={Link}
-            to="/transactions"
-            label="Транзакции"
-            leftSection={<IconMobiledata size={24} />}
-            active={location.pathname === "/transactions"}
-          />
+                <>
+                  <NavLink
+                    bdrs="md"
+                    label="Запчасти"
+                    component={Link}
+                    to="/references/parts"
+                    active={location.pathname === "/references/parts"}
+                  />
+                  <NavLink
+                    bdrs="md"
+                    label="Категории"
+                    component={Link}
+                    to="/references/category"
+                    active={location.pathname === "/references/category"}
+                  />
+                  <NavLink
+                    bdrs="md"
+                    label="Машины"
+                    component={Link}
+                    to="/references/cars"
+                    active={location.pathname === "/references/cars"}
+                  />
+                  <NavLink
+                    bdrs="md"
+                    label="Контрагенты"
+                    component={Link}
+                    to="/references/agents"
+                    active={location.pathname === "/references/agents"}
+                  />
+                  <NavLink
+                    bdrs="md"
+                    label="Отделы"
+                    component={Link}
+                    to="/references/departments"
+                    active={location.pathname === "/references/departments"}
+                  />
+                </>
+              </NavLink>
+            </Box>
+          </Tooltip>
+          <Tooltip
+            label="У вас нет доступа"
+            disabled={user?.role === "admin" || user?.role === "mechanic"}
+          >
+            <Box>
+              <NavLink
+                bdrs="md"
+                component={Link}
+                to="/transactions"
+                label="Транзакции"
+                leftSection={<IconMobiledata size={24} />}
+                active={location.pathname === "/transactions"}
+                disabled={
+                  !(user?.role === "admin" || user?.role === "mechanic")
+                }
+              />
+            </Box>
+          </Tooltip>
         </AppShell.Section>
         {/* Эта секция всегда будет в самом низу */}
         <AppShell.Section>
